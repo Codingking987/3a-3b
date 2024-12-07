@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liikennekamera</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        nav {
+            background-color: #444;
+            overflow: hidden;
+            display: flex;
+        }
+        nav a {
+            flex: 1;
+            padding: 14px;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            background-color: #444;
+        }
+        nav a:hover, nav a.active {
+            background-color: #555;
+        }
+        section {
+            padding: 20px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="tapahtumat.html">Tapahtumat</a>
+        <a href="saa.html">Sää</a>
+        <a href="liikennekamera.html" class="active">Liikennekamerat</a>
+        <a href="junat.html">Junat</a>
+    </nav>
+
+    <section>
+        <h2>Liikennekamera - Tie 3 Tampere, Lakalaiva</h2>
+        <div id="liikennekamerat-vastaus">Ladataan...</div>
+    </section>
+
+    <script>
+        // Tässä on URL, josta voidaan hakea liikennekameran data (tässä esimerkissä suora API-linkki)
+        const apiUrl = 'https://tie.digitraffic.fi/api/weathercam/v1/stations/C04507'; // Esimerkki URL
+
+        // Haetaan JSON-tiedot API:sta
+        fetch(apiUrl)
+            .then(response => response.json()) // Muutetaan vastaus JSONiksi
+            .then(cameraData => {
+                // Tarkistetaan, että data on oikeassa muodossa
+                if (cameraData && cameraData.properties && cameraData.properties.presets) {
+                    let teksti = `<h3>${cameraData.properties.names.fi}</h3>`;
+                    
+                    // Käydään läpi presetit ja lisätään kuvat
+                    cameraData.properties.presets.forEach(preset => {
+                        if (preset.inCollection) {
+                            teksti += `
+                                <div>
+                                    <h4>${preset.presentationName}</h4>
+                                    <img src="${preset.imageUrl}" alt="Kamera: ${preset.presentationName}" />
+                                </div>
+                            `;
+                        }
+                    });
+
+                    // Näytetään kuvat
+                    document.getElementById("liikennekamerat-vastaus").innerHTML = teksti;
+                } else {
+                    document.getElementById("liikennekamerat-vastaus").innerHTML = 'Tietoja ei löytynyt.';
+                }
+            })
+            .catch(error => {
+                // Virhetilanteet
+                console.error('Virhe API-kutsussa:', error);
+                document.getElementById("liikennekamerat-vastaus").innerHTML = 'Tietoja ei pystytty hakemaan.';
+            });
+    </script>
+</body>
+</html>

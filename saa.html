@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sää</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        nav {
+            background-color: #444;
+            overflow: hidden;
+            display: flex;
+        }
+        nav button {
+            flex: 1;
+            padding: 14px;
+            color: white;
+            background-color: #444;
+            border: none;
+            cursor: pointer;
+        }
+        nav button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        
+        <h1>Säätila</h1>
+
+    </header>
+    <nav>
+        <button onclick="location.href='tapahtumat.html'">Tapahtumat</button>
+        <button onclick="location.href='saa.html'">Sää</button>
+        <button onclick="location.href='liikennekamera.html'">Liikennekamerat</button>
+        <button onclick="location.href='junat.html'">Junat</button>
+    </nav>
+    <section id="saa">
+        <div id="saa-vastaus"></div>
+    </section>
+    <script>
+        const apiKey = "665ecd56dfc08dbb50feb8b8f5034e28";
+        const cities = ["helsinki", "tampere"];
+        cities.forEach(city => {
+            fetch(`https://api.openweathermap.org/data/2.5/weather?lang=fi&q=${city}&units=metric&APPID=${apiKey}`)
+                .then(response => response.json())
+                .then(data => {
+                    const kuva = `http://openweathermap.org/img/w/${data.weather[0].icon}.png`;
+                    let teksti = `<div>
+                                    <h3>${data.name}</h3>
+                                    <p>${data.weather[0].description}</p>
+                                    <p>Lämpötila: ${data.main.temp}&deg;C</p>
+                                    <p>Tuulen nopeus: ${data.wind.speed} m/s</p>
+                                    <img src="${kuva}" alt="Säätila">
+                                  </div>`;
+                    document.getElementById("saa-vastaus").innerHTML += teksti;
+                })
+                .catch(error => {
+                    document.getElementById("saa-vastaus").innerHTML += "<p>Tietoa ei pystytä hakemaan</p>" + error;
+                });
+        });
+    </script>
+</body>
+</html>

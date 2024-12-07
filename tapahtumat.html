@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tapahtumat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        nav {
+            background-color: #444;
+            overflow: hidden;
+            display: flex;
+        }
+        nav button {
+            flex: 1;
+            padding: 14px;
+            color: white;
+            background-color: #444;
+            border: none;
+            cursor: pointer;
+        }
+        nav button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Tapahtumat Tampereella</h1>
+    </header>
+    <nav>
+        <button onclick="location.href='tapahtumat.html'">Tapahtumat</button>
+        <button onclick="location.href='saa.html'">Sää</button>
+        <button onclick="location.href='liikennekamera.html'">Liikennekamerat</button>
+        <button onclick="location.href='junat.html'">Junat</button>
+    </nav>
+    <section id="tapahtumat">
+        <div id="tapahtumat-vastaus"></div>
+    </section>
+    <script>
+        fetch('https://api.visittampere.com/api/v1/visittampere/event/published/all/?format=json&lang=fi')
+            .then(response => response.json())
+            .then(data => {
+                let teksti = "";
+                data.forEach(event => {
+                    teksti += `<div>
+                                  <h3>${event.title}</h3>
+                                  <p>${event.description || "Ei kuvausta saatavilla."}</p>
+                                  <a href="${event.info_url || '#'}" target="_blank">Lisätietoja</a>
+                               </div>`;
+                });
+                document.getElementById("tapahtumat-vastaus").innerHTML = teksti;
+            })
+            .catch(error => {
+                document.getElementById("tapahtumat-vastaus").innerHTML = "<p>Tietoa ei pystytä hakemaan</p>" + error;
+            });
+    </script>
+</body>
+</html>

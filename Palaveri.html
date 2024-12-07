@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="vastaus">  </div>
+<script>
+fetch('https://raw.githubusercontent.com/Codingking987/Palaveri/refs/heads/main/Palaveri')
+// Muunnetaan vastaus JSON muotoon
+ .then(function (response) {
+return response.json();
+})
+// Käsitellään muunnettu (eli JSON muotoinen) vastaus
+.then(function (responseJson) {
+// Kutsutaan funktiota ja välitetään sille json-vastaus
+kerro(responseJson);
+})
+// Jos tuli jokin virhe
+.catch(function (error) {
+document.getElementById("vastaus").innerHTML =
+"<p>Tietoa ei pystytä hakemaan</p>";
+})
+function kerro(data) {
+    var teksti = "";
+    teksti = "<h1> Palaverin tiedot </h1>";
+    teksti = teksti + "<p>" + data.palaveri.aihe + "</p>";
+    teksti = teksti + "<p>" + data.palaveri.osallistujien_lukumaara + "</p>";
+    teksti = teksti + "<p>" + data.palaveri.osallistujat + "</p>";
+    teksti = teksti + "<p>" + data.palaveri.paikka + "</p>";
+    teksti = teksti + "<p>" + data.palaveri.alkaminen + "</p>";
+    teksti = teksti + "<p>" + data.palaveri.kesto + "</p>";
+    document.getElementById("vastaus").innerHTML = teksti; 
+}
+</script>
+</body>
+</html>

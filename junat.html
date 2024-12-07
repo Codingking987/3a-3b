@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Junat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        nav {
+            background-color: #444;
+            overflow: hidden;
+            display: flex;
+        }
+        nav button {
+            flex: 1;
+            padding: 14px;
+            color: white;
+            background-color: #444;
+            border: none;
+            cursor: pointer;
+        }
+        nav button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Junat Tampereelle</h1>
+    </header>
+    <nav>
+        <button onclick="location.href='tapahtumat.html'">Tapahtumat</button>
+        <button onclick="location.href='saa.html'">Sää</button>
+        <button onclick="location.href='liikennekamera.html'">Liikennekamerat</button>
+        <button onclick="location.href='junat.html'">Junat</button>
+    </nav>
+    <section id="junat">
+        <div id="junat-vastaus"></div>
+    </section>
+    <script>
+        fetch('https://rata.digitraffic.fi/api/v1/live-trains/station/HKI?departing_trains=100&include_nonstopping=false')
+            .then(response => response.json())
+            .then(data => {
+                let teksti = "";
+                const limitedTrains = data.slice(0, 10); // Limit to 10 trains
+                limitedTrains.forEach(juna => {
+                    const vika = juna.timeTableRows.length - 1;
+                    const lahtoasema = juna.timeTableRows[0].stationShortCode;
+                    const maaranpaa = juna.timeTableRows[vika].stationShortCode;
+
+                    // Find departure and arrival times
+                    let lahtoaika = "";
+                    let saapumisaika = "";
+
+                    juna.timeTableRows.forEach(row => {
+                        if (row.stationShortCode === "HKI" && row.type === "DEPARTURE") {
+                            const pvm = row.scheduledTime;
+                            lahtoaika = pvm.substr(0, 10) + " kello: " + pvm.substr(11, 5);
+                        }
+                        if (row.stationShortCode === "TPE" && row.type === "ARRIVAL") {
+                            const pvm = row.scheduledTime;
+                            saapumisaika = pvm.substr(0, 10) + " kello: " + pvm.substr(11, 5);
+                        }
+                    });
+
+                    teksti += `<div>
+                                  <h3>${juna.trainType} ${juna.trainNumber}</h3>
+                                  <p>Lähtöasema: ${lahtoasema}</p>
+                                  <p>Määränpää: ${maaranpaa}</p>
+                                  <p>Lähtöaika: ${lahtoaika}</p>
+                                  <p>Saapumisaika: ${saapumisaika}</p>
+                               </div>`;
+                });
+                document.getElementById("junat-vastaus").innerHTML = teksti;
+            })
+            .catch(error => {
+                document.getElementById("junat-vastaus").innerHTML = "<p>Tietoa ei pystytä hakemaan</p>" + error;
+            });
+    </script>
+</body>
+</html>

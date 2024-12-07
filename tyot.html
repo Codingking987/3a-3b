@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Työpaikat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+       
+    </style>
+</head>
+<body>
+    <h1>Available Job Listings</h1>
+    <ul id="job-list">Loading jobs...</ul>
+
+    <script>
+      
+        const jobList = document.getElementById('job-list');
+
+        const apiUrl = 'http://gis.vantaa.fi/rest/tyopaikat/v1/Opetusala'; 
+
+      
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(jobs => {
+                
+                jobList.innerHTML = '';
+
+                jobs.forEach(job => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `
+                        <strong>${job.tyotehtava}</strong><br>
+                        ${job.osoite}<br>
+                        <a href="${job.linkki}" target="_blank">View Job</a>
+                    `;
+                    jobList.appendChild(listItem);
+                });
+            })
+            .catch(error => {
+
+                console.error('virhe etsiessä työtä:', error);
+                jobList.innerHTML = '<li>Yritä uudelleen myöhemmin</li>';
+            });
+    </script>
+</body>
+</html>
